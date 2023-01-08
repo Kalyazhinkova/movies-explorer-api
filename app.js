@@ -7,12 +7,8 @@ import { constants } from 'http2';
 import { errors } from 'celebrate';
 import cors from 'cors';
 
-import { router as userRouter } from './routes/users.js';
-import { router as movieRouter } from './routes/movies.js';
-import { router as authRouter } from './routes/auth.js';
-import { auth } from './middlewares/auth.js';
+import { router } from './routes/index.js';
 import { requestLogger, errorLogger } from './middlewares/logger.js';
-import { NotFoundError } from './errors/NotFoundError.js';
 
 export const run = async (envName) => {
   try {
@@ -63,10 +59,8 @@ export const run = async (envName) => {
       }, 0);
     });
 
-    app.use('/', authRouter);
-    app.use('/users', auth, userRouter);
-    app.use('/movies', auth, movieRouter);
-    app.all('/*', () => { throw new NotFoundError('Запрашиваемая страница не найдена'); });
+    app.use(router);
+
     app.use(errorLogger);
     app.use(errors());
 

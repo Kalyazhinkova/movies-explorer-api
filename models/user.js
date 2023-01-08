@@ -11,7 +11,6 @@ const userSchema = new Schema({
     required: true,
     minlength: 2,
     maxlength: 30,
-    default: 'Имя',
   },
   email: {
     type: String,
@@ -29,6 +28,7 @@ const userSchema = new Schema({
   },
 });
 
+// Проверяем пользователя - есть ли пользователь с такой почтой и паролью в базе
 userSchema.statics.findOneAndValidatePassword = function ({ email, password }) {
   return this.findOne({ email })
     .select('+password')

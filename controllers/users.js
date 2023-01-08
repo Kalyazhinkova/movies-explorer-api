@@ -61,18 +61,20 @@ export const read = (req, res, next) => {
 };
 
 export const update = (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email } = req.body;
   const userId = req.user._id;
-  User.findByIdAndUpdate(userId, { name, email, password }, { new: true })
+  User.findByIdAndUpdate(userId, { name, email }, { new: true })
     .then((updateUser) => {
       if (updateUser) {
-        res.send(updateUser);
+        res.send({ data: updateUser });
       } else {
-        throw new NotFoundError('Не удалось обновить пользователя');
+        throw new NotFoundError('Пользователь не найден');
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'MongoServerError') {
+        next(new ConflictError('Пользователь с такой почтой уже существует!'));
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(badRequestError(err.message));
       } else {
         next(err);

@@ -9,9 +9,14 @@ const schemaObjectUserAuth = Joi.object({ email: schemaEmail, password: schemaPa
 const schemaObjectUser = Joi.object(
   { email: schemaEmail, password: schemaPassword, name: schemaName },
 );
+const schemaObjectUserWithoutPassword = Joi.object(
+  { email: schemaEmail, name: schemaName },
+);
 
 const segmentBodyUserAuth = { [Segments.BODY]: schemaObjectUserAuth };
 const segmentBodyUser = { [Segments.BODY]: schemaObjectUser };
+const segmentBodyUserWithoutPassword = { [Segments.BODY]: schemaObjectUserWithoutPassword };
 
 export const celebrateBodyAuth = celebrate(segmentBodyUserAuth);
 export const celebrateBodyUser = celebrate(segmentBodyUser);
+export const celebrateBodyUserWithoutPassword = celebrate(segmentBodyUserWithoutPassword);

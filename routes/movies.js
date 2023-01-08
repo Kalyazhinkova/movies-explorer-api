@@ -4,8 +4,8 @@ import {
 } from '../controllers/movies.js';
 import { celebrateBodyMovie, celebrateParamsRouteId } from '../validators/movies.js';
 
-export const router = Router();
+export const moviesRouter = Router();
 
-router.get('/', read);
-router.post('/', celebrateBodyMovie, create);
-router.delete('/:id', celebrateParamsRouteId, remove);
+moviesRouter.get('/movies', read);
+moviesRouter.post('/movies', celebrateBodyMovie, create);
+moviesRouter.delete('/movies/:id', celebrateParamsRouteId, remove);

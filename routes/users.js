@@ -3,10 +3,10 @@ import {
   read, update,
 } from '../controllers/users.js';
 import {
-  celebrateBodyUser,
+  celebrateBodyUserWithoutPassword,
 } from '../validators/users.js';
 
-export const router = Router();
+export const userRouter = Router();
 
-router.get('/me', read);
-router.patch('/me', celebrateBodyUser, update);
+userRouter.get('/users/me', read);
+userRouter.patch('/users/me', celebrateBodyUserWithoutPassword, update);

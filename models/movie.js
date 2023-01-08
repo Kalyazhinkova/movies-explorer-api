@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { urlCheck } from '../utils/constant.js';
 
 const { Schema } = mongoose;
 
@@ -27,36 +28,24 @@ const movieSchema = new Schema({
     type: String,
     required: true,
     validate: {
-      validator(v) {
-        // eslint-disable-next-line no-useless-escape
-        const urlCheck = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-        return urlCheck.test(v);
-      },
-      message: 'Картинка задается в виде ссылки!',
+      validator: (link) => urlCheck.test(link),
+      message: () => 'Картинка задается в виде ссылки!',
     },
   },
   trailerLink: {
     type: String,
     required: true,
     validate: {
-      validator(v) {
-        // eslint-disable-next-line no-useless-escape
-        const urlCheck = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-        return urlCheck.test(v);
-      },
-      message: 'Трейлер задается в виде ссылки!',
+      validator: (link) => urlCheck.test(link),
+      message: () => 'Трейлер задается в виде ссылки!',
     },
   },
   thumbnail: {
     type: String,
     required: true,
     validate: {
-      validator(v) {
-        // eslint-disable-next-line no-useless-escape
-        const urlCheck = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-        return urlCheck.test(v);
-      },
-      message: 'Постер задается в виде ссылки!',
+      validator: (link) => urlCheck.test(link),
+      message: () => 'Постер задается в виде ссылки!',
     },
   },
   owner: {
