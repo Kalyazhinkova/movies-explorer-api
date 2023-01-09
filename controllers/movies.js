@@ -2,8 +2,9 @@ import { Movie } from '../models/movie.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { ForbiddenError } from '../errors/ForbiddenError.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
+import { moviesBadRequestError, moviesNotFoundError, moviesForbiddenError } from '../errors/constants.js';
 
-const badRequestError = (message) => new BadRequestError(`Некорректные данные для создания карточки фильма. ${message}`);
+const badRequestError = (message) => new BadRequestError(`${moviesBadRequestError} ${message}`);
 
 export const read = (req, res, next) => {
   Movie.find({ owner: req.user._id })
@@ -34,10 +35,10 @@ export const remove = (req, res, next) => {
   Movie.findById(req.params.id)
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError('Запрашиваемый фильм не найден!');
+        throw new NotFoundError(moviesNotFoundError);
       }
       if (movie.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('Можно удалять только свои объекты!');
+        throw new ForbiddenError(moviesForbiddenError);
       }
       return Movie.findByIdAndRemove(req.params.id);
     }).then((movie) => { res.send(movie); })

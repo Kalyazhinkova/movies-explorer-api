@@ -3,12 +3,15 @@ import mongoose from 'mongoose';
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import { constants } from 'http2';
 import { errors } from 'celebrate';
 import cors from 'cors';
+import helmet from 'helmet';
 
 import { router } from './routes/index.js';
 import { requestLogger, errorLogger } from './middlewares/logger.js';
+import { middleError } from './middlewares/error.js';
+import { limiter } from './middlewares/limiter.js';
+import { serverMessage, serverMessageError, configError } from './errors/constants.js';
 
 export const run = async (envName) => {
   try {
@@ -23,7 +26,7 @@ export const run = async (envName) => {
       path: path.resolve(isProduction ? '.env' : '.env.common'),
     }).parsed;
     if (!config) {
-      throw new Error('Config not found');
+      throw new Error(configError);
     }
 
     config.NODE_ENV = envName;
@@ -44,6 +47,8 @@ export const run = async (envName) => {
       allowedHeaders: ['Content-Type', 'Authorization'],
     }));
 
+    app.use(limiter);
+
     // для локального запуска
     // app.use(cors({
     //   origin: '*', allowedHeaders: ['Content-Type', 'Authorization'],
@@ -52,29 +57,16 @@ export const run = async (envName) => {
     app.set('config', config);
     app.use(bodyParser.json());
     app.use(requestLogger);
-
-    app.get('/crash-test', () => {
-      setTimeout(() => {
-        throw new Error('Сервер сейчас упадёт');
-      }, 0);
-    });
-
+    app.use(helmet());
     app.use(router);
-
     app.use(errorLogger);
     app.use(errors());
-
-    app.use((err, req, res, next) => {
-      const status = err.statusCode || constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
-      const message = err.message || 'Неизвестная ошибка';
-      res.status(status).send({ message });
-      next();
-    });
+    app.use(middleError);
 
     mongoose.set('runValidators', true);
     await mongoose.connect(config.DB_URL);
     const server = app.listen(config.PORT, config.HOST, () => {
-      console.log(`Сервер запущен http://${config.HOST}:${config.PORT}`);
+      console.log(`${serverMessage} http://${config.HOST}:${config.PORT}`);
     });
 
     // завершаем работу приложения
@@ -87,6 +79,6 @@ export const run = async (envName) => {
     process.on('SIGTERM', stop);
     process.on('SIGINT', stop);
   } catch (err) {
-    console.error(`Сервер не запущен:${err.message}`);
+    console.error(`${serverMessageError}:${err.message}`);
   }
 };

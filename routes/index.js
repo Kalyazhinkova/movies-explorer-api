@@ -10,6 +10,7 @@ import { userRouter } from './users.js';
 import { moviesRouter } from './movies.js';
 import { auth } from '../middlewares/auth.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
+import { messageNotFoundError } from '../errors/constants.js';
 
 export const router = Router();
 
@@ -22,4 +23,4 @@ router.post('/signin', celebrateBodyAuth, login);
 router.use(auth);
 router.use('/', userRouter);
 router.use('/', moviesRouter);
-router.all('/*', () => { throw new NotFoundError('Запрашиваемая страница не найдена'); });
+router.all('/*', () => { throw new NotFoundError(messageNotFoundError); });

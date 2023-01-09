@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { urlCheck } from '../utils/constant.js';
+import isUrlValid from 'url-validation';
+import { imageValidationError, trailerValidationError, thumbnailValidationError } from '../errors/constants.js';
 
 const { Schema } = mongoose;
 
@@ -28,24 +29,24 @@ const movieSchema = new Schema({
     type: String,
     required: true,
     validate: {
-      validator: (link) => urlCheck.test(link),
-      message: () => 'Картинка задается в виде ссылки!',
+      validator: (link) => isUrlValid(link),
+      message: () => imageValidationError,
     },
   },
   trailerLink: {
     type: String,
     required: true,
     validate: {
-      validator: (link) => urlCheck.test(link),
-      message: () => 'Трейлер задается в виде ссылки!',
+      validator: (link) => isUrlValid(link),
+      message: () => trailerValidationError,
     },
   },
   thumbnail: {
     type: String,
     required: true,
     validate: {
-      validator: (link) => urlCheck.test(link),
-      message: () => 'Постер задается в виде ссылки!',
+      validator: (link) => isUrlValid(link),
+      message: () => thumbnailValidationError,
     },
   },
   owner: {

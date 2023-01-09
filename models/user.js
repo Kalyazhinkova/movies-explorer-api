@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { UnathorizedError } from '../errors/UnauthorizedError.js';
 import { schemaEmail } from '../validators/users.js';
+import { emailValidationError, userUnathorizedError, userNotFoundError } from '../errors/constants.js';
 
 const { Schema } = mongoose;
 
@@ -18,7 +19,7 @@ const userSchema = new Schema({
     unique: true,
     velidate: {
       validator: (value) => !schemaEmail.validate(value).error,
-      message: () => 'Не верно формат email!',
+      message: () => emailValidationError,
     },
   },
   password: {
@@ -34,12 +35,12 @@ userSchema.statics.findOneAndValidatePassword = function ({ email, password }) {
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnathorizedError('Пользователь с такими данными не найден');
+        throw new UnathorizedError(userNotFoundError);
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new UnathorizedError('Неправильная почта или пароль');
+            throw new UnathorizedError(userUnathorizedError);
           }
           // удаляем пароль из объекта пользователя и превращаем в объект
           const { password: removed, ...userWithoutPassword } = user.toObject();

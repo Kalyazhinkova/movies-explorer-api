@@ -4,6 +4,7 @@ import { User } from '../models/user.js';
 import { BadRequestError } from '../errors/BadRequestError.js';
 import { ConflictError } from '../errors/ConflictError.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
+import { userConflictError, userNotFoundError } from '../errors/constants.js';
 
 const badRequestError = (message) => new BadRequestError(message);
 const notUniqueErrorCode = 11000;
@@ -32,7 +33,7 @@ export const create = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === notUniqueErrorCode) {
-        next(new ConflictError('Пользователь с такой почтой уже существует!'));
+        next(new ConflictError(userConflictError));
       } else if (err.name === 'ValidationError') {
         next(badRequestError(err.message));
       } else {
@@ -46,7 +47,7 @@ export const read = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден!');
+        throw new NotFoundError(userNotFoundError);
       } else {
         res.send(user);
       }
@@ -68,12 +69,12 @@ export const update = (req, res, next) => {
       if (updateUser) {
         res.send({ data: updateUser });
       } else {
-        throw new NotFoundError('Пользователь не найден');
+        throw new NotFoundError(userNotFoundError);
       }
     })
     .catch((err) => {
       if (err.name === 'MongoServerError') {
-        next(new ConflictError('Пользователь с такой почтой уже существует!'));
+        next(new ConflictError(userConflictError));
       } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(badRequestError(err.message));
       } else {

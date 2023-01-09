@@ -1,8 +1,6 @@
 import { Joi, Segments } from 'celebrate';
-import { celebrate, sсhemaObjectId, sсhemaURL } from './common.js';
-import { ruName, enName } from '../utils/constant.js';
+import { celebrate, sсhemaObjectId } from './common.js';
 
-export const schemaLink = sсhemaURL.required();
 export const schemaName = Joi.string().min(2).max(30).required();
 export const schemaString = Joi.string().required();
 export const schemaNumber = Joi.number().required();
@@ -15,12 +13,12 @@ export const schemaObjectMovie = Joi.object(
     duration: schemaNumber,
     year: schemaString,
     description: schemaString,
-    image: schemaLink,
-    trailerLink: schemaLink,
-    thumbnail: schemaLink,
+    image: schemaString,
+    trailerLink: schemaString,
+    thumbnail: schemaString,
     movieId: schemaNumber,
-    nameRU: Joi.string().pattern(ruName).required(),
-    nameEN: Joi.string().pattern(enName).required(),
+    nameRU: schemaString,
+    nameEN: schemaString,
   },
 );
 export const schemaObjectRouterId = Joi.object({ id: schemaRouterId }).required();

@@ -3,7 +3,7 @@ import { celebrate } from './common.js';
 
 export const schemaEmail = Joi.string().email().required();
 const schemaPassword = Joi.string().required();
-const schemaName = Joi.string().min(2).max(30);
+const schemaName = Joi.string().min(2).max(30).required();
 
 const schemaObjectUserAuth = Joi.object({ email: schemaEmail, password: schemaPassword });
 const schemaObjectUser = Joi.object(
